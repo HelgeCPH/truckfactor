@@ -24,6 +24,7 @@ import tempfile
 import subprocess
 from pathlib import Path
 from shutil import which
+from urllib.parse import urlparse
 from truckfactor.evo_log_to_csv import convert
 from truckfactor.repair_git_move import repair
 import pandas as pd
@@ -127,6 +128,30 @@ def git_is_available():
         return False
 
 
+def is_git_url(potential_url):
+    result = urlparse(potential_url)
+    is_complete_url = all((result.scheme, result.netloc, result.path))
+    is_git = result.path.endswith(".git")
+    is_git_user = result.path.startswith("git@")
+    if is_complete_url and is_git:
+        return True
+    elif is_git_user and is_git:
+        return True
+    else:
+        return False
+
+
+def clone_to_tmp(url):
+    path = Path(urlparse(url).path)
+    outdir = path.name.removesuffix(path.suffix)
+    git_repo_dir = os.path.join(TMP, outdir)
+    cmd = f"git clone {url} {git_repo_dir}"
+    print(cmd)
+    subprocess.run(cmd, shell=True)
+
+    return git_repo_dir
+
+
 def run():
     if not git_is_available():
         print(
@@ -138,8 +163,11 @@ def run():
         print(__doc__)
         sys.exit(1)
 
-    path_to_repo = sys.argv[1]
-    if not os.path.isdir(path_to_repo):
+    if is_git_url(sys.argv[1]):
+        path_to_repo = clone_to_tmp(sys.argv[1])
+    elif Path(path_to_repo).is_dir():
+        path_to_repo = sys.argv[1]
+    else:
         print(__doc__)
         sys.exit(1)
     truckfactor = main(path_to_repo)

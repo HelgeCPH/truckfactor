@@ -29,11 +29,14 @@ The tool requires that `git` is installed and accessible on `PATH`.
 
 ## How to use it?
 
-You have to point the tool to a directory containing a Git repository.
+You have to either point the tool to a directory containing a Git repository or
+to a URL with a remote repository. In case a URL is given, the tool will clone
+the repository into a temporary directory.
+
 From the terminal, the tool can be run as in the following:
 
 ```bash
-$ truckfactor <path_to_repository>
+$ truckfactor <path_or_url_to_repository>
 The truck factor of <path_to_repository> is: <number>
 ```
 
