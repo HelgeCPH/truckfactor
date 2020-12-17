@@ -112,7 +112,9 @@ def compute_truck_factor(df, freq_df):
     return truckfactor
 
 
-def main(path_to_repo):
+def main(path_to_repo, is_url=False):
+    if is_url:
+        path_to_repo = clone_to_tmp(path_to_repo)
     evo_log_csv = preprocess_git_log_data(path_to_repo)
     complete_df = pd.read_csv(evo_log_csv)
     owner_df, owner_freq_df = create_file_owner_data(complete_df)
@@ -163,16 +165,13 @@ def run():
         print(__doc__)
         sys.exit(1)
 
-    if is_git_url(sys.argv[1]):
-        path_to_repo = clone_to_tmp(sys.argv[1])
-    elif Path(path_to_repo).is_dir():
+    if is_git_url(sys.argv[1]) or Path(sys.argv[1]).is_dir():
         path_to_repo = sys.argv[1]
+        truckfactor = main(path_to_repo, is_url=is_git_url(sys.argv[1]))
+        print(f"The truck factor of {path_to_repo} is: {truckfactor}")
     else:
         print(__doc__)
         sys.exit(1)
-    truckfactor = main(path_to_repo)
-
-    print(f"The truck factor of {path_to_repo} is: {truckfactor}")
 
 
 if __name__ == "__main__":

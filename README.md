@@ -40,7 +40,7 @@ $ truckfactor <path_or_url_to_repository>
 The truck factor of <path_to_repository> is: <number>
 ```
 
-For now, it just returns on line of text ending in the number of the truck 
+For now, it just returns one line of text ending in the number of the truck 
 factor for that repository.
 
 
@@ -65,7 +65,7 @@ In essence the tool does the following:
     - That computation is inspired by 
     [A. Thornhill _Your Code as a Crime Scene_](https://pragprog.com/titles/atcrime/your-code-as-a-crime-scene/).
     - Note, only for text files knowledge ownership is computed. The tool may 
-    not, return a good answer for repositories containing only binary files.
+    not return a good answer for repositories containing only binary files.
   * Then similar to [G. Avelino et al. *A novel approach for estimating Truck Factors*](https://peerj.com/preprints/1233.pdf) 
   low-contributing authors are removed from the analysis as long as still more 
   than half of all files have a knowledge owner. The amount of remaining 
