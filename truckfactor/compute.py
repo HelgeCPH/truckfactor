@@ -24,7 +24,7 @@ import uuid
 import tempfile
 import subprocess
 from pathlib import Path
-from shutil import which
+from shutil import which, rmtree
 from urllib.parse import urlparse
 from truckfactor.evo_log_to_csv import convert
 from truckfactor.repair_git_move import repair
@@ -120,6 +120,9 @@ def main(path_to_repo, is_url=False):
     complete_df = pd.read_csv(evo_log_csv)
     owner_df, owner_freq_df = create_file_owner_data(complete_df)
     truckfactor = compute_truck_factor(owner_df, owner_freq_df)
+
+    if is_url:
+        rmtree(path_to_repo, ignore_errors=True)
     return truckfactor
 
 
