@@ -20,6 +20,7 @@ More on the truck factor:
 """
 import os
 import sys
+import uuid
 import tempfile
 import subprocess
 from pathlib import Path
@@ -135,7 +136,7 @@ def is_git_url(potential_url):
     is_complete_url = all((result.scheme, result.netloc, result.path))
     is_git = result.path.endswith(".git")
     is_git_user = result.path.startswith("git@")
-    if is_complete_url and is_git:
+    if is_complete_url:
         return True
     elif is_git_user and is_git:
         return True
@@ -146,7 +147,7 @@ def is_git_url(potential_url):
 def clone_to_tmp(url):
     path = Path(urlparse(url).path)
     outdir = path.name.removesuffix(path.suffix)
-    git_repo_dir = os.path.join(TMP, outdir)
+    git_repo_dir = os.path.join(TMP, outdir + str(uuid.uuid4()))
     cmd = f"git clone {url} {git_repo_dir}"
     print(cmd)
     subprocess.run(cmd, shell=True)
