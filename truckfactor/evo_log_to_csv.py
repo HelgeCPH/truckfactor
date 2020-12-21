@@ -1,10 +1,9 @@
+import csv
 import os
 import re
-import csv
+import subprocess
 import sys
 import tempfile
-import subprocess
-
 
 LINE_RE = r"(-|\d+)+\s+(-|\d+)+\s+(.*)"
 RENAME_RE = r"\{(.*) => (.*)\}"

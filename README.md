@@ -11,9 +11,9 @@ The truck factor is
   >
   > L. Williams and R. Kessler, Pair Programming Illuminated. Addison Wesley, 2003.
 
-One of the earliest occurrences of the term in a real project was in the Python
+<!-- One of the earliest occurrences of the term in a real project was in the Python
 mailing list: 
-["If Guido was hit by a bus?"](https://legacy.python.org/search/hypermail/python-1994q2/1040.html)
+["If Guido was hit by a bus?"](https://legacy.python.org/search/hypermail/python-1994q2/1040.html) -->
 
 
 ## Installation
@@ -35,13 +35,26 @@ the repository into a temporary directory.
 
 From the terminal, the tool can be run as in the following:
 
-```bash
-$ truckfactor <path_or_url_to_repository>
-The truck factor of <path_to_repository> is: <number>
+```
+Usage:
+  truckfactor <repository> [<commit_sha>] [--output=<kind>]
+  truckfactor -h | --help
+  truckfactor --version
+
+Options:
+  -h --help     Show this screen.
+  --version     Show version.
+  --output=<kind>  Kind of output, either csv or verbose.
 ```
 
-For now, it just returns one line of text ending in the number of the truck 
-factor for that repository.
+For example, in its most basic form it can be called like this:
+
+```bash
+$ truckfactor <path_or_url_to_repository>
+The truck factor of <path_to_repository> (<commit_sha>) is: <number>
+```
+
+If no `output` switch is given, the tool produces a single line output above. Otherwise, it will output a line in CSV format or in key: value form.
 
 
 Calling it from code:
@@ -70,3 +83,8 @@ In essence the tool does the following:
   low-contributing authors are removed from the analysis as long as still more 
   than half of all files have a knowledge owner. The amount of remaining 
   knowledge owners is the truck factor of the given repository.
+
+
+# Why does it exist?
+
+This tool was developed since in Dec. 2020, we could not find an open-source and readily installable tool to compute truck factors of projects on PyPI or Rubygems.

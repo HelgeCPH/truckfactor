@@ -53,6 +53,14 @@ optional = false
 python-versions = ">=2.6, !=3.0.*, !=3.1.*"
 
 [[package]]
+name = "docopt"
+version = "0.6.2"
+description = "Pythonic argument parser, that will make you smile"
+category = "main"
+optional = false
+python-versions = "*"
+
+[[package]]
 name = "ipython"
 version = "7.19.0"
 description = "IPython: Productive Interactive Computing"
@@ -90,6 +98,19 @@ description = "Vestigial utilities from IPython"
 category = "dev"
 optional = false
 python-versions = "*"
+
+[[package]]
+name = "isort"
+version = "5.6.4"
+description = "A Python utility / library to sort Python imports."
+category = "dev"
+optional = false
+python-versions = ">=3.6,<4.0"
+
+[package.extras]
+pipfile_deprecated_finder = ["pipreqs", "requirementslib"]
+requirements_deprecated_finder = ["pipreqs", "pip-api"]
+colors = ["colorama (>=0.4.3,<0.5.0)"]
 
 [[package]]
 name = "jedi"
@@ -267,6 +288,47 @@ python-versions = "!=3.0.*,!=3.1.*,!=3.2.*,>=2.7"
 six = ">=1.5"
 
 [[package]]
+name = "python-jsonrpc-server"
+version = "0.4.0"
+description = "JSON RPC 2.0 server library"
+category = "dev"
+optional = false
+python-versions = "*"
+
+[package.dependencies]
+ujson = ">=3.0.0"
+
+[package.extras]
+test = ["versioneer", "pylint", "pycodestyle", "pyflakes", "pytest", "mock", "pytest-cov", "coverage"]
+
+[[package]]
+name = "python-language-server"
+version = "0.36.2"
+description = "Python Language Server for the Language Server Protocol"
+category = "dev"
+optional = false
+python-versions = "*"
+
+[package.dependencies]
+jedi = ">=0.17.2,<0.18.0"
+pluggy = "*"
+python-jsonrpc-server = ">=0.4.0"
+yapf = {version = "*", optional = true, markers = "extra == \"yapf\""}
+
+[package.extras]
+all = ["autopep8", "flake8 (>=3.8.0)", "mccabe (>=0.6.0,<0.7.0)", "pycodestyle (>=2.6.0,<2.7.0)", "pydocstyle (>=2.0.0)", "pyflakes (>=2.2.0,<2.3.0)", "pylint (>=2.5.0)", "rope (>=0.10.5)", "yapf"]
+autopep8 = ["autopep8"]
+flake8 = ["flake8 (>=3.8.0)"]
+mccabe = ["mccabe (>=0.6.0,<0.7.0)"]
+pycodestyle = ["pycodestyle (>=2.6.0,<2.7.0)"]
+pydocstyle = ["pydocstyle (>=2.0.0)"]
+pyflakes = ["pyflakes (>=2.2.0,<2.3.0)"]
+pylint = ["pylint (>=2.5.0)"]
+rope = ["rope (>0.10.5)"]
+test = ["versioneer", "pylint (>=2.5.0)", "pytest", "mock", "pytest-cov", "coverage", "numpy", "pandas", "matplotlib", "flaky", "pyqt5"]
+yapf = ["yapf"]
+
+[[package]]
 name = "pytz"
 version = "2020.4"
 description = "World timezone definitions, modern and historical"
@@ -283,6 +345,14 @@ optional = false
 python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*"
 
 [[package]]
+name = "toml"
+version = "0.10.2"
+description = "Python Library for Tom's Obvious, Minimal Language"
+category = "main"
+optional = false
+python-versions = ">=2.6, !=3.0.*, !=3.1.*, !=3.2.*"
+
+[[package]]
 name = "traitlets"
 version = "5.0.5"
 description = "Traitlets Python configuration system"
@@ -297,6 +367,14 @@ ipython-genutils = "*"
 test = ["pytest"]
 
 [[package]]
+name = "ujson"
+version = "4.0.1"
+description = "Ultra fast JSON encoder and decoder for Python"
+category = "dev"
+optional = false
+python-versions = ">=3.6"
+
+[[package]]
 name = "wcwidth"
 version = "0.2.5"
 description = "Measures the displayed width of unicode strings in a terminal"
@@ -304,10 +382,18 @@ category = "dev"
 optional = false
 python-versions = "*"
 
+[[package]]
+name = "yapf"
+version = "0.30.0"
+description = "A formatter for Python code."
+category = "dev"
+optional = false
+python-versions = "*"
+
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.9"
-content-hash = "f3eefa8960bd1ac33f9ac3412599c5318041347505321adf83e0dbf607bba352"
+content-hash = "dbb27c106a0a371f137bc91cace4f439a7df1b846bab4e887d6d65df1fb9f3d4"
 
 [metadata.files]
 appnope = [
@@ -334,6 +420,9 @@ decorator = [
     {file = "decorator-4.4.2-py2.py3-none-any.whl", hash = "sha256:41fa54c2a0cc4ba648be4fd43cff00aedf5b9465c9bf18d64325bc225f08f760"},
     {file = "decorator-4.4.2.tar.gz", hash = "sha256:e3a62f0520172440ca0dcc823749319382e377f37f140a0b99ef45fecb84bfe7"},
 ]
+docopt = [
+    {file = "docopt-0.6.2.tar.gz", hash = "sha256:49b3a825280bd66b3aa83585ef59c4a8c82f2c8a522dbe754a8bc8d08c85c491"},
+]
 ipython = [
     {file = "ipython-7.19.0-py3-none-any.whl", hash = "sha256:c987e8178ced651532b3b1ff9965925bfd445c279239697052561a9ab806d28f"},
     {file = "ipython-7.19.0.tar.gz", hash = "sha256:cbb2ef3d5961d44e6a963b9817d4ea4e1fa2eb589c371a470fed14d8d40cbd6a"},
@@ -341,6 +430,10 @@ ipython = [
 ipython-genutils = [
     {file = "ipython_genutils-0.2.0-py2.py3-none-any.whl", hash = "sha256:72dd37233799e619666c9f639a9da83c34013a73e8bbc79a7a6348d93c61fab8"},
     {file = "ipython_genutils-0.2.0.tar.gz", hash = "sha256:eb2e116e75ecef9d4d228fdc66af54269afa26ab4463042e33785b887c628ba8"},
+]
+isort = [
+    {file = "isort-5.6.4-py3-none-any.whl", hash = "sha256:dcab1d98b469a12a1a624ead220584391648790275560e1a43e54c5dceae65e7"},
+    {file = "isort-5.6.4.tar.gz", hash = "sha256:dcaeec1b5f0eca77faea2a35ab790b4f3680ff75590bfcb7145986905aab2f58"},
 ]
 jedi = [
     {file = "jedi-0.17.2-py2.py3-none-any.whl", hash = "sha256:98cc583fa0f2f8304968199b01b6b4b94f469a1f4a74c1560506ca2a211378b5"},
@@ -460,6 +553,14 @@ python-dateutil = [
     {file = "python-dateutil-2.8.1.tar.gz", hash = "sha256:73ebfe9dbf22e832286dafa60473e4cd239f8592f699aa5adaf10050e6e1823c"},
     {file = "python_dateutil-2.8.1-py2.py3-none-any.whl", hash = "sha256:75bb3f31ea686f1197762692a9ee6a7550b59fc6ca3a1f4b5d7e32fb98e2da2a"},
 ]
+python-jsonrpc-server = [
+    {file = "python-jsonrpc-server-0.4.0.tar.gz", hash = "sha256:62c543e541f101ec5b57dc654efc212d2c2e3ea47ff6f54b2e7dcb36ecf20595"},
+    {file = "python_jsonrpc_server-0.4.0-py3-none-any.whl", hash = "sha256:e5a908ff182e620aac07db5f57887eeb0afe33993008f57dc1b85b594cea250c"},
+]
+python-language-server = [
+    {file = "python-language-server-0.36.2.tar.gz", hash = "sha256:9984c84a67ee2c5102c8e703215f407fcfa5e62b0ae86c9572d0ada8c4b417b0"},
+    {file = "python_language_server-0.36.2-py2.py3-none-any.whl", hash = "sha256:a0ad0aca03f4a20c1c40f4f230c6773eac82c9b7cdb026cb09ba10237f4815d5"},
+]
 pytz = [
     {file = "pytz-2020.4-py2.py3-none-any.whl", hash = "sha256:5c55e189b682d420be27c6995ba6edce0c0a77dd67bfbe2ae6607134d5851ffd"},
     {file = "pytz-2020.4.tar.gz", hash = "sha256:3e6b7dd2d1e0a59084bcee14a17af60c5c562cdc16d828e8eba2e683d3a7e268"},
@@ -468,11 +569,42 @@ six = [
     {file = "six-1.15.0-py2.py3-none-any.whl", hash = "sha256:8b74bedcbbbaca38ff6d7491d76f2b06b3592611af620f8426e82dddb04a5ced"},
     {file = "six-1.15.0.tar.gz", hash = "sha256:30639c035cdb23534cd4aa2dd52c3bf48f06e5f4a941509c8bafd8ce11080259"},
 ]
+toml = [
+    {file = "toml-0.10.2-py2.py3-none-any.whl", hash = "sha256:806143ae5bfb6a3c6e736a764057db0e6a0e05e338b5630894a5f779cabb4f9b"},
+    {file = "toml-0.10.2.tar.gz", hash = "sha256:b3bda1d108d5dd99f4a20d24d9c348e91c4db7ab1b749200bded2f839ccbe68f"},
+]
 traitlets = [
     {file = "traitlets-5.0.5-py3-none-any.whl", hash = "sha256:69ff3f9d5351f31a7ad80443c2674b7099df13cc41fc5fa6e2f6d3b0330b0426"},
     {file = "traitlets-5.0.5.tar.gz", hash = "sha256:178f4ce988f69189f7e523337a3e11d91c786ded9360174a3d9ca83e79bc5396"},
 ]
+ujson = [
+    {file = "ujson-4.0.1-cp36-cp36m-macosx_10_14_x86_64.whl", hash = "sha256:5fe1536465b1c86e32a47113abd3178001b7c2dcd61f95f336fe2febf4661e74"},
+    {file = "ujson-4.0.1-cp36-cp36m-manylinux1_i686.whl", hash = "sha256:0f412c3f59b1ab0f40018235224ca0cf29232d0201ff5085618565a8a9c810ed"},
+    {file = "ujson-4.0.1-cp36-cp36m-manylinux1_x86_64.whl", hash = "sha256:4f12b0b4e235b35d49f15227b0a827e614c52dda903c58a8f5523936c233dfc7"},
+    {file = "ujson-4.0.1-cp36-cp36m-manylinux2014_aarch64.whl", hash = "sha256:7a1545ac2476db4cc1f0f236603ccbb50991fc1bba480cda1bc06348cc2a2bf0"},
+    {file = "ujson-4.0.1-cp36-cp36m-win_amd64.whl", hash = "sha256:078808c385036cba73cad96f498310c61e9b5ae5ac9ea01e7c3996ece544b556"},
+    {file = "ujson-4.0.1-cp37-cp37m-macosx_10_14_x86_64.whl", hash = "sha256:4fe8c6112b732cba5a722f7cbe22f18d405f6f44415794a5b46473a477635233"},
+    {file = "ujson-4.0.1-cp37-cp37m-manylinux1_i686.whl", hash = "sha256:71703a269f074ff65b9d7746662e4b3e76a4af443e532218af1e8ce15d9b1e7b"},
+    {file = "ujson-4.0.1-cp37-cp37m-manylinux1_x86_64.whl", hash = "sha256:b87379a3f8046d6d111762d81f3384bf38ab24b1535c841fe867a4a097d84523"},
+    {file = "ujson-4.0.1-cp37-cp37m-manylinux2014_aarch64.whl", hash = "sha256:a79bca47eafb31c74b38e68623bc9b2bb930cb48fab1af31c8f2cb68cf473421"},
+    {file = "ujson-4.0.1-cp37-cp37m-win_amd64.whl", hash = "sha256:e7ab24942b2d57920d75b817b8eead293026db003247e26f99506bdad86c61b4"},
+    {file = "ujson-4.0.1-cp38-cp38-macosx_10_14_x86_64.whl", hash = "sha256:51480048373cf97a6b97fcd70c3586ca0a31f27e22ab680fb14c1f22bedbf743"},
+    {file = "ujson-4.0.1-cp38-cp38-manylinux1_i686.whl", hash = "sha256:c604024bd853b5df6be7d933e934da8dd139e6159564db7c55b92a9937678093"},
+    {file = "ujson-4.0.1-cp38-cp38-manylinux1_x86_64.whl", hash = "sha256:568bb3e7f035006147af4ce3a9ced7d126c92e1a8607c7b2266007b1c1162c53"},
+    {file = "ujson-4.0.1-cp38-cp38-manylinux2014_aarch64.whl", hash = "sha256:bd4c77aee3ffb920e2dbc21a9e0c7945a400557ce671cfd57dbd569f5ebc619d"},
+    {file = "ujson-4.0.1-cp38-cp38-win_amd64.whl", hash = "sha256:c354c1617b0a4378b6279d0cd511b769500cf3fa7c42e8e004cbbbb6b4c2a875"},
+    {file = "ujson-4.0.1-cp39-cp39-macosx_10_14_x86_64.whl", hash = "sha256:a5200a68f1dcf3ce275e1cefbcfa3914b70c2b5e2f71c2e31556aa1f7244c845"},
+    {file = "ujson-4.0.1-cp39-cp39-manylinux1_i686.whl", hash = "sha256:a618af22407baeadb3f046f81e7a5ee5e9f8b0b716d2b564f92276a54d26a823"},
+    {file = "ujson-4.0.1-cp39-cp39-manylinux1_x86_64.whl", hash = "sha256:0a2e1b211714eb1ec0772a013ec9967f8f95f21c84e8f46382e9f8a32ae781fe"},
+    {file = "ujson-4.0.1-cp39-cp39-manylinux2014_aarch64.whl", hash = "sha256:2b2d9264ac76aeb11f590f7a1ccff0689ba1313adacbb6d38d3b15f21a392897"},
+    {file = "ujson-4.0.1-cp39-cp39-win_amd64.whl", hash = "sha256:f8a60928737a9a47e692fcd661ef2b5d75ba22c7c930025bd95e338f2a6e15bc"},
+    {file = "ujson-4.0.1.tar.gz", hash = "sha256:26cf6241b36ff5ce4539ae687b6b02673109c5e3efc96148806a7873eaa229d3"},
+]
 wcwidth = [
     {file = "wcwidth-0.2.5-py2.py3-none-any.whl", hash = "sha256:beb4802a9cebb9144e99086eff703a642a13d6a0052920003a230f3294bbe784"},
     {file = "wcwidth-0.2.5.tar.gz", hash = "sha256:c4d647b99872929fdb7bdcaa4fbe7f01413ed3d98077df798530e5b04f116c83"},
+]
+yapf = [
+    {file = "yapf-0.30.0-py2.py3-none-any.whl", hash = "sha256:3abf61ba67cf603069710d30acbc88cfe565d907e16ad81429ae90ce9651e0c9"},
+    {file = "yapf-0.30.0.tar.gz", hash = "sha256:3000abee4c28daebad55da6c85f3cd07b8062ce48e2e9943c8da1b9667d48427"},
 ]

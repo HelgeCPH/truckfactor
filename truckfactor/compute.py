@@ -2,12 +2,6 @@
 This program computes the truck factor (also called bus factor) for a given 
 Git repository.
 
-It can be called like:
-
-truckfactor <path_to_git_repository>
-
-python -m truckfactor.run 
-
 The truck factor specifies "...the number of people on your team that have to 
 be hit by a truck (or quit) before the project is in serious trouble..."" 
 L. Williams and R. Kessler, Pair Programming Illuminated
@@ -15,30 +9,49 @@ L. Williams and R. Kessler, Pair Programming Illuminated
 Note, do not call it from within a Git repository.
 
 More on the truck factor:
-  * https://legacy.python.org/search/hypermail/python-1994q2/1040.html
   * https://en.wikipedia.org/wiki/Bus_factor
+  * https://legacy.python.org/search/hypermail/python-1994q2/1040.html
+
+
+Usage:
+  truckfactor <repository> [<commit_sha>] [--output=<kind>]
+  truckfactor -h | --help
+  truckfactor --version
+
+Options:
+  -h --help     Show this screen.
+  --version     Show version.
+  --output=<kind>  Kind of output, either csv or verbose.
 """
+import csv
 import os
-import sys
-import uuid
-import tempfile
 import subprocess
+import sys
+import tempfile
+import uuid
 from pathlib import Path
-from shutil import which, rmtree
+from shutil import rmtree, which
 from urllib.parse import urlparse
+
+import pandas as pd
+from docopt import docopt
+
+from truckfactor import __version__
 from truckfactor.evo_log_to_csv import convert
 from truckfactor.repair_git_move import repair
-import pandas as pd
 
 
 TMP = tempfile.gettempdir()
 
 
-def write_git_log_to_file(path_to_repo):
+def write_git_log_to_file(path_to_repo, commit_sha=None):
     p = Path(path_to_repo)
     outfile = os.path.join(TMP, p.name + "_evo.log")
 
-    cmd = f"""git -C {path_to_repo} log --pretty=format:'"%h","%an","%ad"' \
+    if not commit_sha:
+        commit_sha = get_head_commit_sha()
+    cmd = f"""git -C {path_to_repo} log {commit_sha} \
+    --pretty=format:'"%h","%an","%ad"' \
     --date=short \
     --numstat > \
     {outfile}"""
@@ -48,8 +61,8 @@ def write_git_log_to_file(path_to_repo):
     return outfile
 
 
-def preprocess_git_log_data(path_to_repo):
-    evo_log = write_git_log_to_file(path_to_repo)
+def preprocess_git_log_data(path_to_repo, commit_sha=None):
+    evo_log = write_git_log_to_file(path_to_repo, commit_sha=commit_sha)
     evo_log_csv = convert(evo_log)
     evo_log_csv = repair(evo_log_csv)
     return evo_log_csv
@@ -93,8 +106,8 @@ def create_file_owner_data(df):
 def compute_truck_factor(df, freq_df):
     """Similar to G. Avelino et al.
     [*A novel approach for estimating Truck Factors*](https://ieeexplore.ieee.org/stamp)/stamp.jsp?arnumber=7503718)
-    we remove low-contributing authors from the dataset as long as still more 
-    than half of the files have an owner. The amount of remaining owners is the 
+    we remove low-contributing authors from the dataset as long as still more
+    than half of the files have an owner. The amount of remaining owners is the
     bus-factor of that project.
     """
     no_artifacts = len(df.artifact)
@@ -113,10 +126,10 @@ def compute_truck_factor(df, freq_df):
     return truckfactor
 
 
-def main(path_to_repo, is_url=False):
+def main(path_to_repo, is_url=False, commit_sha=None):
     if is_url:
         path_to_repo = clone_to_tmp(path_to_repo)
-    evo_log_csv = preprocess_git_log_data(path_to_repo)
+    evo_log_csv = preprocess_git_log_data(path_to_repo, commit_sha=commit_sha)
     complete_df = pd.read_csv(evo_log_csv)
     owner_df, owner_freq_df = create_file_owner_data(complete_df)
     truckfactor = compute_truck_factor(owner_df, owner_freq_df)
@@ -158,6 +171,34 @@ def clone_to_tmp(url):
     return git_repo_dir
 
 
+def get_head_commit_sha():
+    cmd = f"git -C {path_to_repo} rev-parse HEAD"
+    result = subprocess.run(cmd, shell=True, capture_output=True, text=True)
+    commit_sha = result.stdout.strip()
+
+    return commit_sha
+
+
+def create_ouput(path_to_repo, commit_sha, truckfactor, kind="human"):
+
+    if not commit_sha:
+        commit_sha = get_head_commit_sha()
+
+    if kind == "human":
+        msg = (
+            f"The truck factor of {path_to_repo} ({commit_sha}) is:"
+            + f" {truckfactor}"
+        )
+        print(msg)
+    elif kind == "csv":
+        csv_writer = csv.writer(sys.stdout)
+        csv_writer.writerow((path_to_repo, commit_sha, truckfactor))
+    elif kind == "verbose":
+        print(f"Repository: {path_to_repo}")
+        print(f"Commit: {commit_sha}")
+        print(f"Truckfactor: {truckfactor}")
+
+
 def run():
     if not git_is_available():
         print(
@@ -165,14 +206,22 @@ def run():
         )
         sys.exit(1)
 
-    if len(sys.argv) <= 1:
-        print(__doc__)
-        sys.exit(1)
+    arguments = docopt(__doc__, version=__version__)
 
-    if is_git_url(sys.argv[1]) or Path(sys.argv[1]).is_dir():
-        path_to_repo = sys.argv[1]
-        truckfactor = main(path_to_repo, is_url=is_git_url(sys.argv[1]))
-        print(f"The truck factor of {path_to_repo} is: {truckfactor}")
+    commit_sha = arguments["<commit_sha>"]
+    path_to_repo = arguments["<repository>"]
+    if not arguments["--output"]:
+        output = "human"
+    else:
+        output = arguments["--output"].lower()
+        if not output in ["csv", "verbose"]:
+            print(__doc__)
+            sys.exit(1)
+    if is_git_url(path_to_repo) or Path(path_to_repo).is_dir():
+        truckfactor = main(
+            path_to_repo, is_url=is_git_url(path_to_repo), commit_sha=commit_sha
+        )
+        create_ouput(path_to_repo, commit_sha, truckfactor, kind=output)
     else:
         print(__doc__)
         sys.exit(1)
