@@ -77,6 +77,13 @@ def preprocess_git_log_data(path_to_repo, commit_sha=None):
 
 
 def create_file_owner_data(df):
+    """Currently, we count up how many lines each author added per file.
+    That is, we do not compute churn, where we would also detract the amount of
+    lines that are removed.
+
+    The author with knowledge ownership is the one that just added the most to 
+    file. We do not apply a threshold like one must own above 80% or similar.
+    """
     new_rows = []
 
     for fname in set(df.current.values):
@@ -119,7 +126,6 @@ def compute_truck_factor(df, freq_df):
     bus-factor of that project.
     """
     no_artifacts = len(df.artifact)
-
     half_no_artifacts = no_artifacts // 2
     count = 0
 
