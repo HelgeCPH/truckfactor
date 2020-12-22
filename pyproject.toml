@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "truckfactor"
-version = "0.2.6"
+version = "0.2.7"
 description = " Tool to compute the truck factor of a Git repository "
 authors = ["HelgeCPH <ropf@itu.dk>"]
 readme = "README.md"

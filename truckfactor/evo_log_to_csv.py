@@ -29,8 +29,15 @@ def parse_numstat_block(commit_line, block):
 
 
 def convert(report_file):
-    with open(report_file) as fp:
-        lines = fp.readlines()
+    try:
+        # In some rare cases UTF-8 characters, such as `ø` cannot be decoded
+        # correctly. Even though, the `file` tool reports the log file as utf-8
+        # encoded, it does not seem to be the case
+        with open(report_file, encoding="utf-8") as fp:
+            lines = fp.readlines()
+    except:
+        with open(report_file, encoding="ISO-8859-1") as fp:
+            lines = fp.readlines()
     if lines:
         # Adding this empty line is necessary to not loose the very first commit
         # when parsing the commits below
@@ -57,7 +64,7 @@ def convert(report_file):
                 commit_block = []
     out_file = f"{report_file}.csv"
     out_path = os.path.join(tempfile.gettempdir(), out_file)
-    with open(out_path, "w") as fp:
+    with open(out_path, "w", encoding="utf-8") as fp:
         fp.write("hash,author,date,added,removed,fname\n")
         for block in commit_blocks:
             commit_line = block[0]

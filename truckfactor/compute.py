@@ -134,7 +134,8 @@ def compute_truck_factor(df, freq_df):
     return truckfactor
 
 
-def main(path_to_repo, is_url=False, commit_sha=None):
+def main(path_to_repo, is_url=False, commit_sha=None, ouputkind="human"):
+    path_to_repo_url = path_to_repo
     if is_url:
         path_to_repo = clone_to_tmp(path_to_repo)
     evo_log_csv = preprocess_git_log_data(path_to_repo, commit_sha=commit_sha)
@@ -143,7 +144,11 @@ def main(path_to_repo, is_url=False, commit_sha=None):
     truckfactor = compute_truck_factor(owner_df, owner_freq_df)
 
     if is_url:
+        commit_sha = get_head_commit_sha(path_to_repo)
+        create_ouput(path_to_repo_url, commit_sha, truckfactor, kind=ouputkind)
         rmtree(path_to_repo, ignore_errors=True)
+    else:
+        create_ouput(path_to_repo, commit_sha, truckfactor, kind=ouputkind)
     return truckfactor
 
 
@@ -234,9 +239,11 @@ def run():
             sys.exit(1)
     if is_git_url(path_to_repo) or is_git_dir(path_to_repo):
         truckfactor = main(
-            path_to_repo, is_url=is_git_url(path_to_repo), commit_sha=commit_sha
+            path_to_repo,
+            is_url=is_git_url(path_to_repo),
+            commit_sha=commit_sha,
+            ouputkind=output,
         )
-        create_ouput(path_to_repo, commit_sha, truckfactor, kind=output)
     else:
         print(__doc__)
         sys.exit(1)
