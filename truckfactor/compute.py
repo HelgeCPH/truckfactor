@@ -155,7 +155,7 @@ def main(path_to_repo, is_url=False, commit_sha=None, ouputkind="human"):
         rmtree(path_to_repo, ignore_errors=True)
     else:
         create_ouput(path_to_repo, commit_sha, truckfactor, kind=ouputkind)
-    return truckfactor
+    return truckfactor, commit_sha
 
 
 def git_is_available():
@@ -244,7 +244,7 @@ def run():
             print(__doc__)
             sys.exit(1)
     if is_git_url(path_to_repo) or is_git_dir(path_to_repo):
-        truckfactor = main(
+        truckfactor, _ = main(
             path_to_repo,
             is_url=is_git_url(path_to_repo),
             commit_sha=commit_sha,
