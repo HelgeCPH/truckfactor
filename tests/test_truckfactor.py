@@ -1,8 +1,9 @@
+import subprocess
+import toml
 from truckfactor import __version__
 
 
 def test_version():
-    import toml
 
     with open("pyproject.toml") as fp:
         contents = toml.load(fp)
@@ -11,8 +12,6 @@ def test_version():
 
 
 def test_end_to_end_human_output():
-    import subprocess
-
     commit_sha = "84f0d6c6b7080388889652bbf8589e7036ef4ffb"
     cmd = f"truckfactor ../truckfactor/ {commit_sha}"
     result = subprocess.run(cmd, shell=True, capture_output=True, text=True)
@@ -26,8 +25,6 @@ def test_end_to_end_human_output():
 
 
 def test_end_to_end_csv_output():
-    import subprocess
-
     commit_sha = "84f0d6c6b7080388889652bbf8589e7036ef4ffb"
     cmd = f"truckfactor ../truckfactor/ {commit_sha} --output=csv"
     result = subprocess.run(cmd, shell=True, capture_output=True, text=True)
@@ -41,8 +38,6 @@ def test_end_to_end_csv_output():
 
 
 def test_end_to_end_verbose_output():
-    import subprocess
-
     commit_sha = "84f0d6c6b7080388889652bbf8589e7036ef4ffb"
     cmd = f"truckfactor ../truckfactor/ {commit_sha} --output=verbose"
     result = subprocess.run(cmd, shell=True, capture_output=True, text=True)
@@ -53,3 +48,71 @@ Commit: 84f0d6c6b7080388889652bbf8589e7036ef4ffb
 Truckfactor: 1"""
 
     assert output == expected_output
+
+
+def test_non_git_repo_dir():
+    script = """rm -rf /tmp/truckfactor_test
+mkdir /tmp/truckfactor_test
+echo 'uiuiui' > /tmp/truckfactor_test/README.md
+"""
+    subprocess.run(script, shell=True)
+
+    cmd = f"truckfactor /tmp/truckfactor_test"
+    result = subprocess.run(cmd, shell=True, capture_output=True, text=True)
+    assert result.returncode == 1
+
+
+def test_empty_repo():
+    script = """rm -rf /tmp/truckfactor_test
+mkdir /tmp/truckfactor_test
+echo 'uiuiui' > /tmp/truckfactor_test/README.md
+git -C /tmp/truckfactor_test init
+"""
+    subprocess.run(script, shell=True)
+
+    cmd = f"truckfactor /tmp/truckfactor_test"
+    result = subprocess.run(cmd, shell=True, capture_output=True, text=True)
+    assert result.returncode == 1
+    msg = "Seems to be an empty repository. Cannot compute truck factor for it."
+    assert result.stderr.strip().endswith(msg)
+
+
+def test_single_commit_repo():
+    script = """rm -rf /tmp/truckfactor_test
+mkdir /tmp/truckfactor_test
+echo 'uiuiui' > /tmp/truckfactor_test/README.md
+git -C /tmp/truckfactor_test init
+git -C /tmp/truckfactor_test add README.md
+git -C /tmp/truckfactor_test commit -m"Added file"
+"""
+
+    subprocess.run(script, shell=True)
+
+    cmd = f"truckfactor /tmp/truckfactor_test --output=csv"
+    result = subprocess.run(cmd, shell=True, capture_output=True, text=True)
+
+    output = result.stdout.strip()
+    assert result.returncode == 0
+    assert int(output.split(",")[-1]) == 0
+
+
+def test_two_commits_repo():
+    script = """rm -rf /tmp/truckfactor_test
+mkdir /tmp/truckfactor_test
+echo 'uiuiui' > /tmp/truckfactor_test/README.md
+git -C /tmp/truckfactor_test init
+git -C /tmp/truckfactor_test add README.md
+git -C /tmp/truckfactor_test commit -m"Added file"
+echo 'uiuiui' > /tmp/truckfactor_test/aiaiai.md
+git -C /tmp/truckfactor_test add aiaiai.md
+git -C /tmp/truckfactor_test commit -m"Added file"
+"""
+
+    subprocess.run(script, shell=True)
+
+    cmd = f"truckfactor /tmp/truckfactor_test --output=csv"
+    result = subprocess.run(cmd, shell=True, capture_output=True, text=True)
+
+    output = result.stdout.strip()
+    assert result.returncode == 0
+    assert int(output.split(",")[-1]) == 1

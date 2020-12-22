@@ -49,7 +49,7 @@ def write_git_log_to_file(path_to_repo, commit_sha=None):
     outfile = os.path.join(TMP, p.name + "_evo.log")
 
     if not commit_sha:
-        commit_sha = get_head_commit_sha()
+        commit_sha = get_head_commit_sha(path_to_repo)
     cmd = f"""git -C {path_to_repo} log {commit_sha} \
     --pretty=format:'"%h","%an","%ad"' \
     --date=short \
@@ -64,7 +64,15 @@ def write_git_log_to_file(path_to_repo, commit_sha=None):
 def preprocess_git_log_data(path_to_repo, commit_sha=None):
     evo_log = write_git_log_to_file(path_to_repo, commit_sha=commit_sha)
     evo_log_csv = convert(evo_log)
-    evo_log_csv = repair(evo_log_csv)
+    try:
+        evo_log_csv = repair(evo_log_csv)
+    except ValueError:
+        msg = (
+            "Seems to be an empty repository."
+            + " Cannot compute truck factor for it.\n"
+        )
+        sys.stderr.write(msg)
+        sys.exit(1)
     return evo_log_csv
 
 
@@ -160,6 +168,14 @@ def is_git_url(potential_url):
         return False
 
 
+def is_git_dir(potential_repo_path):
+    if not Path(potential_repo_path).is_dir():
+        return False
+    cmd = f"git -C {potential_repo_path} rev-parse --is-inside-work-tree"
+    result = subprocess.run(cmd, shell=True, capture_output=True, text=True)
+    return result.stdout.strip() == "true"
+
+
 def clone_to_tmp(url):
     path = Path(urlparse(url).path)
     outdir = path.name.removesuffix(path.suffix)
@@ -171,7 +187,7 @@ def clone_to_tmp(url):
     return git_repo_dir
 
 
-def get_head_commit_sha():
+def get_head_commit_sha(path_to_repo):
     cmd = f"git -C {path_to_repo} rev-parse HEAD"
     result = subprocess.run(cmd, shell=True, capture_output=True, text=True)
     commit_sha = result.stdout.strip()
@@ -180,9 +196,8 @@ def get_head_commit_sha():
 
 
 def create_ouput(path_to_repo, commit_sha, truckfactor, kind="human"):
-
     if not commit_sha:
-        commit_sha = get_head_commit_sha()
+        commit_sha = get_head_commit_sha(path_to_repo)
 
     if kind == "human":
         msg = (
@@ -217,7 +232,7 @@ def run():
         if not output in ["csv", "verbose"]:
             print(__doc__)
             sys.exit(1)
-    if is_git_url(path_to_repo) or Path(path_to_repo).is_dir():
+    if is_git_url(path_to_repo) or is_git_dir(path_to_repo):
         truckfactor = main(
             path_to_repo, is_url=is_git_url(path_to_repo), commit_sha=commit_sha
         )

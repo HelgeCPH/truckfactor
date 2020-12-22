@@ -31,6 +31,10 @@ def parse_numstat_block(commit_line, block):
 def convert(report_file):
     with open(report_file) as fp:
         lines = fp.readlines()
+    if lines:
+        # Adding this empty line is necessary to not loose the very first commit
+        # when parsing the commits below
+        lines.append("")
 
     commit_blocks = []
     commit_block = []
@@ -51,7 +55,6 @@ def convert(report_file):
             else:
                 commit_blocks.append(commit_block[:])
                 commit_block = []
-
     out_file = f"{report_file}.csv"
     out_path = os.path.join(tempfile.gettempdir(), out_file)
     with open(out_path, "w") as fp:
