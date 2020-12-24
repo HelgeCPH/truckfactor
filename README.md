@@ -1,3 +1,5 @@
+![](artwork/logo.png)
+
 # What is this?
 
 This tool, `truckfactor` computes the 
@@ -88,3 +90,40 @@ In essence the tool does the following:
 # Why does it exist?
 
 This tool was developed since in Dec. 2020, we could not find an open-source and readily installable tool to compute truck factors of projects on PyPI or Rubygems.
+
+<!-- 
+## References
+
+https://link.springer.com/article/10.1007/s11219-019-09457-2
+
+A novel approach for estimating truck factors.
+https://github.com/aserg-ufmg/Truck-Factor
+
+Assessing the Bus Factor of Git Repositories (https://ieeexplore.ieee.org/stamp/stamp.jsp?arnumber=7081864&casa_token=fJYjmp-T3RUAAAAA:o_c0hD_yzQHTQJF0rGtEldCmxWlj_E0qn-NN67dxk4rps-p3fcBKpzzonY5SuFez8NEJ5sEx&tag=1)
+https://github.com/atlanmod/busfactor
+https://github.com/SOM-Research/busfactor
+   > the minimum number of people on your team who must be hit by a truck so that your project gets into serious trouble (Bowler, M. (2005). Truck factor. Online. http://www.agileadvice.com/2005/05/15/agilemanagement/truck-factor/, )
+
+Quantifying and mitigating turnover-induced knowledge loss: case studies of Chrome and a project at Avaya
+-> no tool available
+
+Are Heroes common in FLOSS projects?
+https://dl.acm.org/doi/pdf/10.1145/1852786.1852856?casa_token=zZmr-B41OKYAAAAA:z1z_-tQivlm19DqvLysjT2ZNOwvmCmeU_KqtNBM9I3R2ol7EFbQtxx8nFKe921jQgupkAwPRVtct
+on SVN no tool linked
+
+
+On the difficulty of computing the Truck Factor
+https://www.researchgate.net/profile/Filippo_Ricca/publication/221219219_On_the_Difficulty_of_Computing_the_Truck_Factor/links/5746d7db08ae9ace8425ec3e/On-the-Difficulty-of-Computing-the-Truck-Factor.pdf
+SVN no tools linked
+ -->
+
+
+
+-----
+
+# Attributions
+
+<div>Icons made by <a href="https://www.flaticon.com/authors/kiranshastry" title="Kiranshastry">Kiranshastry</a> from <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a></div>
+<div>Icons made by <a href="https://www.flaticon.com/authors/gregor-cresnar" title="Gregor Cresnar">Gregor Cresnar</a> from <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a></div>
+
+

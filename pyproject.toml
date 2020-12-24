@@ -17,6 +17,7 @@ classifiers = [
     "Topic :: Software Development", 
     "Topic :: Utilities",
 ]
+exclude = ["artwork/"]
 
 [tool.poetry.dependencies]
 python = "^3.9"
