@@ -81,7 +81,7 @@ def create_file_owner_data(df):
     That is, we do not compute churn, where we would also detract the amount of
     lines that are removed.
 
-    The author with knowledge ownership is the one that just added the most to 
+    The author with knowledge ownership is the one that just added the most to
     file. We do not apply a threshold like one must own above 80% or similar.
     """
     new_rows = []
@@ -212,8 +212,7 @@ def create_ouput(path_to_repo, commit_sha, truckfactor, kind="human"):
 
     if kind == "human":
         msg = (
-            f"The truck factor of {path_to_repo} ({commit_sha}) is:"
-            + f" {truckfactor}"
+            f"The truck factor of {path_to_repo} ({commit_sha}) is:" + f" {truckfactor}"
         )
         print(msg)
     elif kind == "csv":
@@ -227,9 +226,7 @@ def create_ouput(path_to_repo, commit_sha, truckfactor, kind="human"):
 
 def run():
     if not git_is_available():
-        print(
-            "Truckfactor requires `git` to be installed and accessible on path"
-        )
+        print("Truckfactor requires `git` to be installed and accessible on path")
         sys.exit(1)
 
     arguments = docopt(__doc__, version=__version__)

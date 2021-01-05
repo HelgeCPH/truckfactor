@@ -1,6 +1,7 @@
 import subprocess
 import toml
 from truckfactor import __version__
+from truckfactor.compute import is_git_url, main
 
 
 def test_version():
@@ -30,9 +31,7 @@ def test_end_to_end_csv_output():
     result = subprocess.run(cmd, shell=True, capture_output=True, text=True)
     output = result.stdout.strip()
 
-    expected_output = (
-        "../truckfactor/,84f0d6c6b7080388889652bbf8589e7036ef4ffb,1"
-    )
+    expected_output = "../truckfactor/,84f0d6c6b7080388889652bbf8589e7036ef4ffb,1"
 
     assert output == expected_output
 
@@ -116,3 +115,19 @@ git -C /tmp/truckfactor_test commit -m"Added file"
     output = result.stdout.strip()
     assert result.returncode == 0
     assert int(output.split(",")[-1]) == 1
+
+
+def test_programatic_call():
+    path_to_repo = "../truckfactor/"
+    commit_sha = "84f0d6c6b7080388889652bbf8589e7036ef4ffb"
+
+    assert is_git_url(path_to_repo) == False
+
+    truckfactor, out_commit_sha = main(
+        path_to_repo,
+        is_url=is_git_url(path_to_repo),
+        commit_sha=commit_sha,
+    )
+
+    assert truckfactor == 1
+    assert out_commit_sha == commit_sha
