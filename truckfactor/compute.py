@@ -50,8 +50,9 @@ def write_git_log_to_file(path_to_repo, commit_sha=None):
 
     if not commit_sha:
         commit_sha = get_head_commit_sha(path_to_repo)
+    # %aN takes .mailmap file into consideration in case it is given/configured
     cmd = f"""git -C {path_to_repo} log {commit_sha} \
-    --pretty=format:'"%h","%an","%ad"' \
+    --pretty=format:'"%h","%aN","%ae","%ad"' \
     --date=short \
     --numstat > \
     {outfile}"""
@@ -103,7 +104,7 @@ def create_file_owner_data(df, path_to_repo, commit_sha=None):
 
     new_rows = []
 
-    for fname in files:  # set(df.current.values):
+    for fname in files:
         view = df[df.current == fname]
         sum_series = view.groupby(["author"]).added.sum()
         view_df = sum_series.reset_index(name="sum_added")
@@ -130,7 +131,6 @@ def create_file_owner_data(df, path_to_repo, commit_sha=None):
     owner_freq_series = owner_df.groupby(["main_dev"]).artifact.count()
     owner_freq_df = owner_freq_series.reset_index(name="owns_no_artifacts")
     owner_freq_df.sort_values(by="owns_no_artifacts", inplace=True)
-    print(owner_freq_df)
 
     return owner_df, owner_freq_df
 
@@ -168,10 +168,14 @@ def main(path_to_repo, is_url=False, commit_sha=None, ouputkind="human"):
     truckfactor = compute_truck_factor(owner_df, owner_freq_df)
     if is_url:
         commit_sha = get_head_commit_sha(path_to_repo)
-        create_ouput(path_to_repo_url, commit_sha, truckfactor, kind=ouputkind)
+        create_ouput(
+            path_to_repo_url, commit_sha, truckfactor, owner_df, kind=ouputkind
+        )
         rmtree(path_to_repo, ignore_errors=True)
     else:
-        create_ouput(path_to_repo, commit_sha, truckfactor, kind=ouputkind)
+        create_ouput(
+            path_to_repo, commit_sha, truckfactor, owner_df, kind=ouputkind
+        )
     return truckfactor, commit_sha
 
 
@@ -222,7 +226,7 @@ def get_head_commit_sha(path_to_repo):
     return commit_sha
 
 
-def create_ouput(path_to_repo, commit_sha, truckfactor, kind="human"):
+def create_ouput(path_to_repo, commit_sha, truckfactor, owner_df, kind="human"):
     if not commit_sha:
         commit_sha = get_head_commit_sha(path_to_repo)
 
@@ -239,6 +243,8 @@ def create_ouput(path_to_repo, commit_sha, truckfactor, kind="human"):
         print(f"Repository: {path_to_repo}")
         print(f"Commit: {commit_sha}")
         print(f"Truckfactor: {truckfactor}")
+        print()
+        print(owner_df)
 
 
 def run():

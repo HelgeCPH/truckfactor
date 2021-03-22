@@ -31,7 +31,9 @@ def test_end_to_end_csv_output():
     result = subprocess.run(cmd, shell=True, capture_output=True, text=True)
     output = result.stdout.strip()
 
-    expected_output = "../truckfactor/,84f0d6c6b7080388889652bbf8589e7036ef4ffb,1"
+    expected_output = (
+        "../truckfactor/,84f0d6c6b7080388889652bbf8589e7036ef4ffb,1"
+    )
 
     assert output == expected_output
 
@@ -46,7 +48,7 @@ def test_end_to_end_verbose_output():
 Commit: 84f0d6c6b7080388889652bbf8589e7036ef4ffb
 Truckfactor: 1"""
 
-    assert output == expected_output
+    assert output.startswith(expected_output)
 
 
 def test_non_git_repo_dir():

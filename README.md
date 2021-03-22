@@ -86,10 +86,17 @@ In essence the tool does the following:
   than half of all files have a knowledge owner. The amount of remaining 
   knowledge owners is the truck factor of the given repository.
 
+Note, `truckfactor` takes Git [`.mailmap`](https://git-scm.com/docs/gitmailmap) into consideration when computing the truck factor. That is, to correct for multiple users committing under various names create or configure a `.mailmap` file to map authors to canonical real author names. If no such file is provided, the tool considers authors separately.
 
 # Why does it exist?
 
-This tool was developed since in Dec. 2020, we could not find an open-source and readily installable tool to compute truck factors of projects on PyPI or Rubygems.
+This tool was developed since in Dec. 2020, I could not find an open-source and readily installable tool to compute truck factors of repositories neither on PyPI nor on Rubygems.
+
+
+There exist similar tools to `truckfactor`:
+
+  * A Java tool [Truck-Factor](https://github.com/aserg-ufmg/Truck-Factor), which is described in the paper [_"A Novel Approach for Estimating Truck Factors"_](https://arxiv.org/pdf/1604.06766)
+  * The Python tool [busfactor](https://github.com/SOM-Research/busfactor), which is described in [_"Assessing the Bus Factor of Git Repositories"_](https://hal.inria.fr/hal-01257471/file/saner2015-gitana.pdf) provides a richer UI for project analysis.
 
 <!-- 
 ## References

@@ -65,7 +65,7 @@ def convert(report_file):
     out_file = f"{report_file}.csv"
     out_path = os.path.join(tempfile.gettempdir(), out_file)
     with open(out_path, "w", encoding="utf-8") as fp:
-        fp.write("hash,author,date,added,removed,fname\n")
+        fp.write("hash,author,authoremail,date,added,removed,fname\n")
         for block in commit_blocks:
             commit_line = block[0]
             for csv_line in parse_numstat_block(commit_line, block[1:]):
