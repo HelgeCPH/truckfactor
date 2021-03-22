@@ -29,6 +29,7 @@ import subprocess
 import sys
 import tempfile
 import uuid
+from glob import glob
 from pathlib import Path
 from shutil import rmtree, which
 from urllib.parse import urlparse
@@ -39,7 +40,6 @@ from docopt import docopt
 from truckfactor import __version__
 from truckfactor.evo_log_to_csv import convert
 from truckfactor.repair_git_move import repair
-
 
 TMP = tempfile.gettempdir()
 
@@ -76,7 +76,7 @@ def preprocess_git_log_data(path_to_repo, commit_sha=None):
     return evo_log_csv
 
 
-def create_file_owner_data(df):
+def create_file_owner_data(df, path_to_repo):
     """Currently, we count up how many lines each author added per file.
     That is, we do not compute churn, where we would also detract the amount of
     lines that are removed.
@@ -84,9 +84,21 @@ def create_file_owner_data(df):
     The author with knowledge ownership is the one that just added the most to
     file. We do not apply a threshold like one must own above 80% or similar.
     """
+
+    # TODO: This is only correct for the most current commit. To make it
+    # generally correct add a checkout in case a sha is provided.
+    if path_to_repo.endswith(os.sep):
+        sep = ""
+    else:
+        sep = os.sep
+    current_files = [
+        f.replace(path_to_repo + sep, "")
+        for f in glob(os.path.join(path_to_repo, "**/*"), recursive=True)
+    ]
+
     new_rows = []
 
-    for fname in set(df.current.values):
+    for fname in current_files:  # set(df.current.values):
         view = df[df.current == fname]
         sum_series = view.groupby(["author"]).added.sum()
         view_df = sum_series.reset_index(name="sum_added")
@@ -146,9 +158,9 @@ def main(path_to_repo, is_url=False, commit_sha=None, ouputkind="human"):
         path_to_repo = clone_to_tmp(path_to_repo)
     evo_log_csv = preprocess_git_log_data(path_to_repo, commit_sha=commit_sha)
     complete_df = pd.read_csv(evo_log_csv)
-    owner_df, owner_freq_df = create_file_owner_data(complete_df)
-    truckfactor = compute_truck_factor(owner_df, owner_freq_df)
 
+    owner_df, owner_freq_df = create_file_owner_data(complete_df, path_to_repo)
+    truckfactor = compute_truck_factor(owner_df, owner_freq_df)
     if is_url:
         commit_sha = get_head_commit_sha(path_to_repo)
         create_ouput(path_to_repo_url, commit_sha, truckfactor, kind=ouputkind)
@@ -212,7 +224,8 @@ def create_ouput(path_to_repo, commit_sha, truckfactor, kind="human"):
 
     if kind == "human":
         msg = (
-            f"The truck factor of {path_to_repo} ({commit_sha}) is:" + f" {truckfactor}"
+            f"The truck factor of {path_to_repo} ({commit_sha}) is:"
+            + f" {truckfactor}"
         )
         print(msg)
     elif kind == "csv":
@@ -226,11 +239,12 @@ def create_ouput(path_to_repo, commit_sha, truckfactor, kind="human"):
 
 def run():
     if not git_is_available():
-        print("Truckfactor requires `git` to be installed and accessible on path")
+        print(
+            "Truckfactor requires `git` to be installed and accessible on path"
+        )
         sys.exit(1)
 
     arguments = docopt(__doc__, version=__version__)
-
     commit_sha = arguments["<commit_sha>"]
     path_to_repo = arguments["<repository>"]
     if not arguments["--output"]:
