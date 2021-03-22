@@ -1,4 +1,4 @@
-PHONY: publish
+PHONY: publish poetrypublish githubpublish
 
 poetrypublish:
 	poetry build
