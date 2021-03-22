@@ -76,7 +76,7 @@ def preprocess_git_log_data(path_to_repo, commit_sha=None):
     return evo_log_csv
 
 
-def create_file_owner_data(df, path_to_repo):
+def create_file_owner_data(df, path_to_repo, commit_sha=None):
     """Currently, we count up how many lines each author added per file.
     That is, we do not compute churn, where we would also detract the amount of
     lines that are removed.
@@ -84,21 +84,26 @@ def create_file_owner_data(df, path_to_repo):
     The author with knowledge ownership is the one that just added the most to
     file. We do not apply a threshold like one must own above 80% or similar.
     """
-
-    # TODO: This is only correct for the most current commit. To make it
-    # generally correct add a checkout in case a sha is provided.
     if path_to_repo.endswith(os.sep):
         sep = ""
     else:
         sep = os.sep
-    current_files = [
-        f.replace(path_to_repo + sep, "")
-        for f in glob(os.path.join(path_to_repo, "**/*"), recursive=True)
-    ]
+
+    if commit_sha:
+        # A commit hash is given, i.e., we look back in history
+        cmd = f"git -C {path_to_repo} ls-tree -r --name-only {commit_sha}"
+        result = subprocess.run(cmd, shell=True, capture_output=True, text=True)
+        files = result.stdout.strip().split("\n")
+    else:
+        # If no hash is given, we create stats over the files currently present
+        files = [
+            f.replace(path_to_repo + sep, "")
+            for f in glob(os.path.join(path_to_repo, "**/*"), recursive=True)
+        ]
 
     new_rows = []
 
-    for fname in current_files:  # set(df.current.values):
+    for fname in files:  # set(df.current.values):
         view = df[df.current == fname]
         sum_series = view.groupby(["author"]).added.sum()
         view_df = sum_series.reset_index(name="sum_added")
@@ -122,10 +127,10 @@ def create_file_owner_data(df, path_to_repo):
         new_rows,
         columns=["artifact", "main_dev", "added", "total_added", "owner_rate"],
     )
-
     owner_freq_series = owner_df.groupby(["main_dev"]).artifact.count()
     owner_freq_df = owner_freq_series.reset_index(name="owns_no_artifacts")
     owner_freq_df.sort_values(by="owns_no_artifacts", inplace=True)
+    print(owner_freq_df)
 
     return owner_df, owner_freq_df
 
@@ -204,7 +209,6 @@ def clone_to_tmp(url):
     outdir = path.name.removesuffix(path.suffix)
     git_repo_dir = os.path.join(TMP, outdir + str(uuid.uuid4()))
     cmd = f"git clone {url} {git_repo_dir}"
-    print(cmd)
     subprocess.run(cmd, shell=True)
 
     return git_repo_dir
