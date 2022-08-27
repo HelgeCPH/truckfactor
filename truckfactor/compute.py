@@ -67,10 +67,7 @@ def preprocess_git_log_data(path_to_repo, commit_sha=None):
     try:
         evo_log_csv = repair(evo_log_csv)
     except ValueError:
-        msg = (
-            "Seems to be an empty repository."
-            + " Cannot compute truck factor for it.\n"
-        )
+        msg = "Seems to be an empty repository." + " Cannot compute truck factor for it.\n"
         sys.stderr.write(msg)
         sys.exit(1)
     return evo_log_csv
@@ -129,15 +126,16 @@ def compute_truck_factor(df, freq_df):
     half_no_artifacts = no_artifacts // 2
     count = 0
 
-    for owner, freq in freq_df.values:
+    for idx, (owner, freq) in enumerate(freq_df.values):
         no_artifacts -= freq
         if no_artifacts < half_no_artifacts:
             break
+            # TODO: Here the remaining owners have to be collected to be
         else:
             count += 1
 
     truckfactor = len(freq_df.main_dev) - count
-    return truckfactor
+    return truckfactor, freq_df.iloc[idx:].main_dev
 
 
 def main(path_to_repo, is_url=False, commit_sha=None, ouputkind="human"):
@@ -147,15 +145,15 @@ def main(path_to_repo, is_url=False, commit_sha=None, ouputkind="human"):
     evo_log_csv = preprocess_git_log_data(path_to_repo, commit_sha=commit_sha)
     complete_df = pd.read_csv(evo_log_csv)
     owner_df, owner_freq_df = create_file_owner_data(complete_df)
-    truckfactor = compute_truck_factor(owner_df, owner_freq_df)
+    truckfactor, authors = compute_truck_factor(owner_df, owner_freq_df)
 
     if is_url:
         commit_sha = get_head_commit_sha(path_to_repo)
-        create_ouput(path_to_repo_url, commit_sha, truckfactor, kind=ouputkind)
+        create_ouput(path_to_repo_url, commit_sha, truckfactor, authors, kind=ouputkind)
         rmtree(path_to_repo, ignore_errors=True)
     else:
-        create_ouput(path_to_repo, commit_sha, truckfactor, kind=ouputkind)
-    return truckfactor, commit_sha
+        create_ouput(path_to_repo, commit_sha, truckfactor, authors, kind=ouputkind)
+    return truckfactor, commit_sha, list(authors.values)
 
 
 def git_is_available():
@@ -206,27 +204,29 @@ def get_head_commit_sha(path_to_repo):
     return commit_sha
 
 
-def create_ouput(path_to_repo, commit_sha, truckfactor, kind="human"):
+def create_ouput(path_to_repo, commit_sha, truckfactor, authors, kind="human"):
     if not commit_sha:
         commit_sha = get_head_commit_sha(path_to_repo)
 
+    authors_str = ", ".join(authors)
     if kind == "human":
-        msg = (
-            f"The truck factor of {path_to_repo} ({commit_sha}) is:" + f" {truckfactor}"
-        )
+        msg = f"The truck factor of {path_to_repo} ({commit_sha}) is:" + f" {truckfactor}"
+        print(msg)
+        msg = f"with author(s): {authors_str}"
         print(msg)
     elif kind == "csv":
         csv_writer = csv.writer(sys.stdout)
-        csv_writer.writerow((path_to_repo, commit_sha, truckfactor))
+        csv_writer.writerow((path_to_repo, commit_sha, truckfactor, authors_str))
     elif kind == "verbose":
         print(f"Repository: {path_to_repo}")
         print(f"Commit: {commit_sha}")
         print(f"Truckfactor: {truckfactor}")
+        print(f"Authors: {authors_str}")
 
 
 def run():
     if not git_is_available():
-        print("Truckfactor requires `git` to be installed and accessible on path")
+        print("Truckfactor requires `git` to be installed and accessible on PATH")
         sys.exit(1)
 
     arguments = docopt(__doc__, version=__version__)
@@ -237,11 +237,11 @@ def run():
         output = "human"
     else:
         output = arguments["--output"].lower()
-        if not output in ["csv", "verbose"]:
+        if not output in ["csv", "verbose", "human"]:
             print(__doc__)
             sys.exit(1)
     if is_git_url(path_to_repo) or is_git_dir(path_to_repo):
-        truckfactor, _ = main(
+        truckfactor, _, _ = main(
             path_to_repo,
             is_url=is_git_url(path_to_repo),
             commit_sha=commit_sha,

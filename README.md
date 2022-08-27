@@ -65,7 +65,7 @@ Calling it from code:
 from truckfactor.compute import main
 
 
-truckfactor, commit_sha = main("<path_to_repo>")
+truckfactor, commit_sha, authors = main("<path_to_repo>")
 ```
 
 
