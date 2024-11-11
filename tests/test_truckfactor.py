@@ -22,7 +22,7 @@ def test_end_to_end_human_output():
         "The truck factor of ../truckfactor/ "
         + "(84f0d6c6b7080388889652bbf8589e7036ef4ffb) is: 1"
     )
-    assert output == expected_output
+    assert output.startswith(expected_output)
 
 
 def test_end_to_end_csv_output():
@@ -31,7 +31,7 @@ def test_end_to_end_csv_output():
     result = subprocess.run(cmd, shell=True, capture_output=True, text=True)
     output = result.stdout.strip()
 
-    expected_output = "../truckfactor/,84f0d6c6b7080388889652bbf8589e7036ef4ffb,1"
+    expected_output = "../truckfactor/,84f0d6c6b7080388889652bbf8589e7036ef4ffb,1,HelgeCPH"
 
     assert output == expected_output
 
@@ -44,7 +44,8 @@ def test_end_to_end_verbose_output():
 
     expected_output = """Repository: ../truckfactor/
 Commit: 84f0d6c6b7080388889652bbf8589e7036ef4ffb
-Truckfactor: 1"""
+Truckfactor: 1
+Authors: HelgeCPH"""
 
     assert output == expected_output
 
@@ -92,7 +93,7 @@ git -C /tmp/truckfactor_test commit -m"Added file"
 
     output = result.stdout.strip()
     assert result.returncode == 0
-    assert int(output.split(",")[-1]) == 0
+    assert int(output.split(",")[-2]) == 0
 
 
 def test_two_commits_repo():
@@ -114,7 +115,7 @@ git -C /tmp/truckfactor_test commit -m"Added file"
 
     output = result.stdout.strip()
     assert result.returncode == 0
-    assert int(output.split(",")[-1]) == 1
+    assert int(output.split(",")[-2]) == 1
 
 
 def test_programatic_call():
@@ -123,7 +124,7 @@ def test_programatic_call():
 
     assert is_git_url(path_to_repo) == False
 
-    truckfactor, out_commit_sha = main(
+    truckfactor, out_commit_sha, authors = main(
         path_to_repo,
         is_url=is_git_url(path_to_repo),
         commit_sha=commit_sha,
@@ -131,3 +132,4 @@ def test_programatic_call():
 
     assert truckfactor == 1
     assert out_commit_sha == commit_sha
+    assert authors == ["HelgeCPH", ]
