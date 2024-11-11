@@ -51,7 +51,7 @@ def convert(report_file):
             next_line = lines[idx + 1].rstrip()
         else:
             next_line = ""
-        if line.startswith('"') and next_line.startswith('"'):
+        if (line.startswith('\'') and next_line.startswith('\'')) or (line.startswith('"') and next_line.startswith('"')):
             # Next line is a commit too and they where no changes...
             commit_block.append(line)
             commit_blocks.append(commit_block[:])
