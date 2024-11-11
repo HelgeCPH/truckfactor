@@ -148,7 +148,8 @@ def main(path_to_repo, is_url=False, commit_sha=None, ouputkind="human"):
     truckfactor, authors = compute_truck_factor(owner_df, owner_freq_df)
 
     if is_url:
-        commit_sha = get_head_commit_sha(path_to_repo)
+        if commit_sha is None:
+            commit_sha = get_head_commit_sha(path_to_repo)
         create_ouput(path_to_repo_url, commit_sha, truckfactor, authors, kind=ouputkind)
         rmtree(path_to_repo, ignore_errors=True)
     else:
