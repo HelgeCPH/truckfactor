@@ -70,8 +70,6 @@ def convert(report_file):
             commit_line = block[0]
             for csv_line in parse_numstat_block(commit_line, block[1:]):
                 fp.write(csv_line + "\n")
-
-    print(out_path)
     return out_path
 
 
