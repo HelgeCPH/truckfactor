@@ -50,11 +50,11 @@ def write_git_log_to_file(path_to_repo, commit_sha=None):
 
     if not commit_sha:
         commit_sha = get_head_commit_sha(path_to_repo)
-    cmd = f"""git -C {path_to_repo} log {commit_sha} \
-    --pretty=format:'"%h","%an","%ad"' \
-    --date=short \
-    --numstat > \
-    {outfile}"""
+    cmd = (
+        f"git -C {path_to_repo} log {commit_sha} "
+        r'--pretty=format:"\"%h\",\"%an\",\"%ad\"" '
+        f"--date=short --numstat > {outfile}"
+    )
 
     subprocess.run(cmd, shell=True)
 
