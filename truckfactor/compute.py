@@ -208,6 +208,8 @@ def create_ouput(path_to_repo, commit_sha, truckfactor, authors, kind="human"):
     if not commit_sha:
         commit_sha = get_head_commit_sha(path_to_repo)
 
+    if not kind:
+        return
     authors_str = ", ".join(authors)
     if kind == "human":
         msg = f"The truck factor of {path_to_repo} ({commit_sha}) is:" + f" {truckfactor}"
